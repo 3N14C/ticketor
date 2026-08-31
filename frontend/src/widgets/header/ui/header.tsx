@@ -6,12 +6,17 @@ import { Lock, Login, Search } from "@hugeicons/core-free-icons";
 import { Typography } from "@shared/ui/typography";
 import { Logo } from "@shared/ui/logo";
 import { Button } from "@shared/ui/button";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { PAGES } from "@shared/config";
 
 interface IProps {
 	className?: string;
 }
 
 export const Header: FC<IProps> = ({ className }) => {
+	const router = useRouter();
+
 	return (
 		<div className={className}>
 			<div
@@ -34,8 +39,12 @@ export const Header: FC<IProps> = ({ className }) => {
 						<div
 							className={"flex items-center gap-4 max-w-[400px] w-full ml-auto"}
 						>
-							<Typography className={"text-white"}>Movies</Typography>
-							<Typography className={"text-white"}>Cinemas</Typography>
+							<Link href={""}>
+								<Typography className={"text-white"}>Movies</Typography>
+							</Link>
+							<Link href={""}>
+								<Typography className={"text-white"}>Cinemas</Typography>
+							</Link>
 						</div>
 					</div>
 				</div>
@@ -53,14 +62,21 @@ export const Header: FC<IProps> = ({ className }) => {
 						<HugeiconsIcon icon={Search} className={"text-white"} />
 
 						<div className={"flex items-center gap-2"}>
-							<Button variant={"text"} className={"[&_*]:text-white!"}>
+							<Button
+								onClick={() => router.push(PAGES.auth.signIn)}
+								variant={"text"}
+								className={"[&_*]:text-white!"}
+							>
 								<HugeiconsIcon icon={Lock} />
 								<Typography>Login</Typography>
 							</Button>
 						</div>
 
 						<div className={"flex items-center gap-2"}>
-							<Button variant={"text"}>
+							<Button
+								variant={"text"}
+								onClick={() => router.push(PAGES.auth.signUp)}
+							>
 								<HugeiconsIcon icon={Login} className={"text-primary-500"} />
 								<Typography>Sign Up</Typography>
 							</Button>

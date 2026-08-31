@@ -1,13 +1,11 @@
 "use client";
 
 import { FC, HTMLAttributes } from "react";
-import { VariantProps } from "class-variance-authority";
 import { tagToSize, typographyVariants } from "./variants";
 import { TTypographyVariants } from "./types";
 import { cn } from "../../lib";
 
-interface IProps
-	extends HTMLAttributes<HTMLElement>, VariantProps<TTypographyVariants> {
+interface IProps extends HTMLAttributes<HTMLElement>, TTypographyVariants {
 	children: React.ReactNode;
 }
 

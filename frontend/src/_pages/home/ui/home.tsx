@@ -4,6 +4,7 @@ import { FC } from "react";
 import { Header } from "@widgets/header";
 import { Typography } from "@shared/ui/typography";
 import { Button } from "@shared/ui/button";
+import { CHIPS } from "../model/chips";
 
 export const Home: FC = () => {
 	return (
@@ -41,6 +42,15 @@ export const Home: FC = () => {
 								Find Cinema
 							</Typography>
 						</Button>
+					</div>
+
+					<div className={"grid grid-cols-3 w-full"}>
+						{CHIPS.map((chip) => (
+							<div key={chip.id} className={"flex flex-col items-center gap-2"}>
+								<Typography size={"display-m"}>{chip.count}</Typography>
+								<Typography size={"body-xl"}>{chip.label}</Typography>
+							</div>
+						))}
 					</div>
 				</div>
 			</div>
