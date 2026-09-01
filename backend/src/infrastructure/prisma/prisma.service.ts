@@ -1,5 +1,5 @@
 import {Injectable} from "@nestjs/common";
-import {db, listUsers, type StarterUser} from "./infrastructure/prisma/users";
+import {db, listUsers, type StarterUser} from "./users.ts";
 
 @Injectable()
 export class PrismaService {
