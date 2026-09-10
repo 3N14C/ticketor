@@ -13,7 +13,7 @@ export const useSignUp = () => {
 		mutationFn: ({ username, email, password }: SignUpFormValues) =>
 			signUp({ username, email, password }),
 		onSuccess: ({ message }) => {
-			router.push(PAGES.auth.signIn);
+			router.replace(PAGES.auth.signIn);
 			toast.success(message);
 		},
 		onError: ({ message }: ApiError) => {

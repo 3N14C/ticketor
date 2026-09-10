@@ -1,5 +1,3 @@
-"use client";
-
 import { FC } from "react";
 import { Logo } from "@shared/ui/logo";
 import { Typography } from "@shared/ui/typography";

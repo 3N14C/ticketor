@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import { SignUp } from "@pages/auth";
+import { SignUp } from "@pages/auth/sign-up";
 
 export const metadata: Metadata = {
 	title: "Sign Up",
 };
 
-export default function SignUpPage() {
-	return <SignUp />;
-}
+export default SignUp;

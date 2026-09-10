@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse, ProxyConfig } from "next/server";
-import { resetPasswordGuard } from "@core/guards";
+import { resetPasswordGuard } from "@app/guards";
 
 const proxy = (req: NextRequest) => {
 	const guardResponse = resetPasswordGuard(req);

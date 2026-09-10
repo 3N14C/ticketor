@@ -4,18 +4,18 @@ import { CSSProperties } from "react";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
+	Alert02Icon,
 	CheckmarkCircle02Icon,
 	InformationCircleIcon,
-	Alert02Icon,
-	MultiplicationSignCircleIcon,
 	Loading03Icon,
+	MultiplicationSignCircleIcon,
 } from "@hugeicons/core-free-icons";
 
 const Toaster = (props: ToasterProps) => {
 	return (
 		<Sonner
 			theme={"dark"}
-			position={"top-center"}
+			position={"bottom-center"}
 			richColors
 			closeButton
 			className={"toaster group"}

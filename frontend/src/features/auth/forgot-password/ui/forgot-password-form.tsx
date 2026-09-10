@@ -10,7 +10,7 @@ import { Input } from "@shared/ui/input";
 import { Button } from "@shared/ui/button";
 import { Typography } from "@shared/ui/typography";
 import { useForgotPassword } from "../model/use-forgot-password";
-import { getFieldError } from "@shared/utils/get-field-error";
+import { getFieldError } from "@shared/lib/form";
 
 export const ForgotPasswordForm: FC = () => {
 	const { submit } = useForgotPassword();

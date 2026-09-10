@@ -7,33 +7,36 @@ import Link from "next/link";
 import { PAGES } from "@shared/config";
 import { Button } from "@shared/ui/button";
 import { useForm } from "@tanstack/react-form";
-import { getFieldError } from "@shared/utils/get-field-error";
-import {
-	defaultSignInSchemaValues,
-	SignInSchema,
-} from "../model/sign-in-schema";
+import { getFieldError, trimListener } from "@shared/lib/form";
+import { defaultSignInSchemaValues, signInSchema } from "../model/sign-in-schema";
+import { useSignIn } from "../model/use-sign-in";
+import { LoaderCircle } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 
 export const SignInForm: FC = () => {
+	const { mutate, isPending } = useSignIn();
 	const form = useForm({
 		defaultValues: defaultSignInSchemaValues,
 		validators: {
-			onChange: SignInSchema,
+			onChange: signInSchema,
 		},
 		formId: "sign-in",
-		onSubmit: async ({ value }) => {},
+		onSubmit: async ({ value }) => {
+			mutate(value);
+		},
 	});
 
+	const onSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		event.stopPropagation();
+		void form.handleSubmit();
+	};
+
 	return (
-		<form
-			onSubmit={(event) => {
-				event.preventDefault();
-				event.stopPropagation();
-				void form.handleSubmit();
-			}}
-			className={"flex flex-col items-start gap-4"}
-		>
+		<form onSubmit={onSubmit} className={"flex flex-col items-start gap-4"}>
 			<form.Field
 				name={"email"}
+				listeners={trimListener}
 				children={(fieldApi) => (
 					<Input
 						onBlur={fieldApi.handleBlur}
@@ -42,6 +45,7 @@ export const SignInForm: FC = () => {
 						label={"Email"}
 						placeholder={"name@example.com"}
 						size={"56"}
+						type={"email"}
 						error={getFieldError(fieldApi.state.meta.errors)}
 					/>
 				)}
@@ -57,6 +61,7 @@ export const SignInForm: FC = () => {
 							error={getFieldError(fieldApi.state.meta.errors)}
 							value={fieldApi.state.value}
 							label={"Password"}
+							type={"password"}
 							placeholder={"Enter your password"}
 							size={"56"}
 						/>
@@ -79,9 +84,14 @@ export const SignInForm: FC = () => {
 				</div>
 			</div>
 
-			<Button size={"56"} type={"submit"}>
-				<Typography size={"button-xl"}>Sign In</Typography>
-			</Button>
+			<form.Subscribe
+				selector={(state) => state.canSubmit}
+				children={(canSubmit) => (
+					<Button disabled={isPending || !canSubmit} size={"56"} type={"submit"}>
+						{!isPending ? <Typography size={"button-xl"}>Sign in</Typography> : <HugeiconsIcon icon={LoaderCircle} className={"animate-spin"} />}
+					</Button>
+				)}
+			/>
 		</form>
 	);
 };

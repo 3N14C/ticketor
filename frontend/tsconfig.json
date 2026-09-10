@@ -25,7 +25,7 @@
 			"@features/*": ["./src/features/*"],
 			"@entities/*": ["./src/entities/*"],
 			"@pages/*": ["./src/_pages/*"],
-			"@core/*": ["./src/core/*"]
+			"@app/*": ["./src/_app/*"]
 		}
 	},
 	"include": [
