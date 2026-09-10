@@ -23,7 +23,7 @@
 			"@shared/*": ["./src/shared/*"],
 			"@widgets/*": ["./src/widgets/*"],
 			"@features/*": ["./src/features/*"],
-			"@entites/*": ["./src/entities/*"],
+			"@entities/*": ["./src/entities/*"],
 			"@pages/*": ["./src/_pages/*"],
 			"@core/*": ["./src/core/*"]
 		}

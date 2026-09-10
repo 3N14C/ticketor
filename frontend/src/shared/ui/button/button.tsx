@@ -2,8 +2,8 @@
 
 import { FC } from "react";
 import { TButtonVariants } from "./types";
-import { cn } from "../../lib";
 import { buttonVariants } from "./variants";
+import { cn } from "../../lib/style";
 
 interface IProps
 	extends React.ButtonHTMLAttributes<HTMLButtonElement>, TButtonVariants {

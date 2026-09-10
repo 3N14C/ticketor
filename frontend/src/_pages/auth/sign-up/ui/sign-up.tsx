@@ -1,12 +1,10 @@
-"use client";
-
 import { FC } from "react";
 import { Logo } from "@shared/ui/logo";
 import { Typography } from "@shared/ui/typography";
 import Link from "next/link";
 import { PAGES } from "@shared/config";
 import { GoogleOauth } from "@features/auth/oauth-google";
-import { SignUpForm } from "@features/auth";
+import { SignUpForm } from "@features/auth/sign-up";
 
 export const SignUp: FC = () => {
 	return (

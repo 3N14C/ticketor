@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '@infrastructure/prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { SignUpDto } from './dto/sign-up.dto';
+import { MessageResponse } from '@core/types/message-response';
 
 @Injectable()
 export class AuthService {
@@ -10,12 +11,7 @@ export class AuthService {
     private readonly usersService: UsersService,
   ) {}
 
-  async signUp(dto: SignUpDto) {
-    const { confirmPassword, ...rest } = dto;
-
-    if (dto.password !== confirmPassword)
-      throw new BadRequestException('Passwords do not match');
-
+  async signUp(dto: SignUpDto): Promise<MessageResponse> {
     const existUser = await this.prisma.user.findUnique({
       where: {
         email: dto.email,
@@ -24,6 +20,10 @@ export class AuthService {
 
     if (existUser) throw new BadRequestException('User already exists');
 
-    return this.usersService.create(rest);
+    await this.usersService.create(dto);
+
+    return {
+      message: 'User created successfully',
+    };
   }
 }

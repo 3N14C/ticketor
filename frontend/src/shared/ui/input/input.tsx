@@ -2,7 +2,7 @@
 
 import { FC } from "react";
 import { Typography } from "../typography";
-import { cn } from "../../lib";
+import { cn } from "../../lib/style";
 import { TInputVariants } from "./types";
 import { inputVariants } from "./variants";
 

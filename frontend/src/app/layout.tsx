@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Figtree, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { cn } from "@shared/lib";
+import { cn } from "@shared/lib/style";
 import { ReactQuery } from "@core/providers";
+import { Toaster } from "@shared/ui/toaster";
 
 const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -35,7 +36,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 			)}
 		>
 			<body className="min-h-full flex flex-col">
-				<ReactQuery>{children}</ReactQuery>
+				<ReactQuery>
+					<Toaster
+						closeButton={false}
+						richColors={true}
+						position={"bottom-center"}
+					/>
+					{children}
+				</ReactQuery>
 			</body>
 		</html>
 	);

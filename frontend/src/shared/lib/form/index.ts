@@ -1,0 +1,1 @@
+export { trimListener } from "./trim-listener";

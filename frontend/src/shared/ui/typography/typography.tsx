@@ -3,7 +3,7 @@
 import { FC, HTMLAttributes } from "react";
 import { tagToSize, typographyVariants } from "./variants";
 import { TTypographyVariants } from "./types";
-import { cn } from "../../lib";
+import { cn } from "../../lib/style";
 
 interface IProps extends HTMLAttributes<HTMLElement>, TTypographyVariants {
 	children: React.ReactNode;
