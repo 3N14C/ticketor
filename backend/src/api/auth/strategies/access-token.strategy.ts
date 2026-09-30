@@ -1,11 +1,12 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { ENVIRONMENTS } from '../configs';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { type Request } from 'express';
-import { JwtTokenPayloadResponse } from '@infrastructure/tokens/dto/res/jwt-token-response.dto';
+import { ENVIRONMENTS } from '@core/configs';
+import { Injectable } from '@nestjs/common';
+import { JwtTokenPayloadResponseDto } from '@infrastructure/tokens/dto/res/jwt-token-response.dto';
 import { TokenDenylistService } from '@infrastructure/redis/token-denylist.service';
+import { extractTokenFromCookie } from './utils/extract-token-from-cookie';
+import { assertTokenNotRevoked } from './utils/assert-token-not-revoked';
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'access-token') {
@@ -14,16 +15,14 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'access-toke
     private readonly tokenDenylistService: TokenDenylistService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => (req.cookies?.['accessToken'] as string) ?? null]),
+      jwtFromRequest: ExtractJwt.fromExtractors([extractTokenFromCookie('accessToken')]),
       secretOrKey: configService.getOrThrow<string>(ENVIRONMENTS.jwt.access.secret),
       ignoreExpiration: false,
     });
   }
 
-  async validate(payload: JwtTokenPayloadResponse): Promise<JwtTokenPayloadResponse> {
-    const isTokenRevoked = await this.tokenDenylistService.isRevoked(payload.jti);
-
-    if (isTokenRevoked) throw new UnauthorizedException('Token revoked');
+  async validate(payload: JwtTokenPayloadResponseDto): Promise<JwtTokenPayloadResponseDto> {
+    await assertTokenNotRevoked(this.tokenDenylistService, payload.jti);
 
     return payload;
   }

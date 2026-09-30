@@ -4,7 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { ENVIRONMENTS } from '@core/configs';
 import { randomUUID } from 'crypto';
 import { JwtTokenPayloadDto } from './dto/req/jwt-token-payload.dto';
-import { JwtTokenPayloadResponse } from './dto/res/jwt-token-response.dto';
+import { JwtTokenPayloadResponseDto } from './dto/res/jwt-token-response.dto';
+import { TokensResponseDto } from './dto/res/tokens-response.dto';
 
 @Injectable()
 export class TokensService {
@@ -43,7 +44,7 @@ export class TokensService {
     );
   }
 
-  async generateTokens(payload: JwtTokenPayloadDto): Promise<{ accessToken: string; refreshToken: string }> {
+  async generateTokens(payload: JwtTokenPayloadDto): Promise<TokensResponseDto> {
     const [accessToken, refreshToken] = await Promise.all([
       this.generateAccessToken(payload),
       this.generateRefreshToken(payload),
@@ -55,13 +56,13 @@ export class TokensService {
     };
   }
 
-  async verifyAccessToken(token: string): Promise<JwtTokenPayloadResponse> {
+  async verifyAccessToken(token: string): Promise<JwtTokenPayloadResponseDto> {
     return await this.jwtService.verifyAsync(token, {
       secret: this.configService.getOrThrow<string>(ENVIRONMENTS.jwt.access.secret),
     });
   }
 
-  async verifyRefreshToken(token: string): Promise<JwtTokenPayloadResponse> {
+  async verifyRefreshToken(token: string): Promise<JwtTokenPayloadResponseDto> {
     return await this.jwtService.verifyAsync(token, {
       secret: this.configService.getOrThrow<string>(ENVIRONMENTS.jwt.refresh.secret),
     });

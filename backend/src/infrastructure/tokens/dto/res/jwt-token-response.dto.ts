@@ -1,4 +1,4 @@
-export abstract class JwtTokenPayloadResponse {
+export abstract class JwtTokenPayloadResponseDto {
   sub: string;
   email: string;
   jti: string;

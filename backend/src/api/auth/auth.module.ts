@@ -5,9 +5,9 @@ import { UsersModule } from '../users/users.module';
 import { TokensModule } from '@infrastructure/tokens/tokens.module';
 import { PassportModule } from '@nestjs/passport';
 import { CookieModule } from '@infrastructure/cookie/cookie.module';
-import { AccessTokenStrategy } from '@core/strategies/access-token.strategy';
+import { AccessTokenStrategy } from './strategies/access-token.strategy';
 import { RedisModule } from '@infrastructure/redis/redis.module';
-import { RefreshTokenStrategy } from '@core/strategies/refresh-token.strategy';
+import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 
 @Module({
   imports: [UsersModule, TokensModule, CookieModule, PassportModule, RedisModule],

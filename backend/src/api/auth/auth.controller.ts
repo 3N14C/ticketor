@@ -8,11 +8,11 @@ import { SignInDto } from './dto/req/sign-in.dto';
 import type { Request, Response } from 'express';
 import { CookieService } from '@infrastructure/cookie/cookie.service';
 import { Throttle } from '@nestjs/throttler';
-import { AccessToken } from '@core/decorators/access-token.decorator';
-import { TokenPayload } from '@core/decorators/me.decorator';
+import { AccessToken } from './decorators/access-token.decorator';
+import { TokenPayload } from './decorators/token-payload.decorator';
 import { UserResponseDto } from '../users/dto/res/user-response.dto';
-import { JwtTokenPayloadResponse } from '@infrastructure/tokens/dto/res/jwt-token-response.dto';
-import { RefreshToken } from '@core/decorators/refresh-token.decorator';
+import { JwtTokenPayloadResponseDto } from '@infrastructure/tokens/dto/res/jwt-token-response.dto';
+import { RefreshToken } from './decorators/refresh-token.decorator';
 
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {
@@ -22,8 +22,11 @@ export class AuthController {
   ) {}
 
   @Post('sign-up')
-  async signUp(@Body() dto: SignUpDto): Promise<MessageResponse> {
-    await this.authService.signUp(dto);
+  async signUp(@Body() dto: SignUpDto, @Res({ passthrough: true }) res: Response): Promise<MessageResponse> {
+    const tokens = await this.authService.signUp(dto);
+
+    this.cookieService.setToken(res, 'accessToken', tokens.accessToken);
+    this.cookieService.setToken(res, 'refreshToken', tokens.refreshToken);
 
     return {
       message: 'Authorized successfully',
@@ -48,7 +51,7 @@ export class AuthController {
   @Post('sign-out')
   @AccessToken()
   async signOut(
-    @TokenPayload() accessTokenPayload: JwtTokenPayloadResponse,
+    @TokenPayload() accessTokenPayload: JwtTokenPayloadResponseDto,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
@@ -62,14 +65,21 @@ export class AuthController {
 
   @Post('refresh-tokens')
   @RefreshToken()
-  async refreshTokens(@Req() req: Request) {
+  async refreshTokens(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<MessageResponse> {
     const refreshToken = this.cookieService.getToken(req, 'refreshToken');
-    await this.authService.refreshTokens(refreshToken);
+    const tokens = await this.authService.refreshTokens(refreshToken);
+
+    this.cookieService.setToken(res, 'accessToken', tokens.accessToken);
+    this.cookieService.setToken(res, 'refreshToken', tokens.refreshToken);
+
+    return {
+      message: 'Refresh token successfully',
+    };
   }
 
   @Get('me')
   @AccessToken()
-  async me(@TokenPayload('sub') sub: string) {
+  async me(@TokenPayload('sub') sub: string): Promise<UserResponseDto> {
     const user = await this.authService.me(sub);
 
     return new UserResponseDto(user);

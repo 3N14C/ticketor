@@ -1,6 +1,6 @@
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { AccessToken } from '@core/decorators/access-token.decorator';
+import { AccessToken } from '../auth/decorators/access-token.decorator';
 import { UserResponseDto } from './dto/res/user-response.dto';
 
 @Controller({ path: 'users', version: '1' })
