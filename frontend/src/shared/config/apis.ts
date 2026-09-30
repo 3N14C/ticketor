@@ -5,5 +5,6 @@ export const APIS = {
 		signUp: `/${API_VERSION}/auth/sign-up`,
 		signIn: `/${API_VERSION}/auth/sign-in`,
 		me: `/${API_VERSION}/auth/me`,
+		refreshTokens: `/${API_VERSION}/auth/refresh-tokens`,
 	},
 };

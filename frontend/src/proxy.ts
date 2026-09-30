@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse, ProxyConfig } from "next/server";
-import { resetPasswordGuard } from "@app/guards";
+import { authGuard, resetPasswordGuard } from "@app/guards";
+
+const guards = [resetPasswordGuard, authGuard];
 
 const proxy = (req: NextRequest) => {
-	const guardResponse = resetPasswordGuard(req);
-	if (guardResponse) {
-		return guardResponse;
+	for (const guard of guards) {
+		const response = guard(req);
+
+		if (response) return response;
 	}
+
 	return NextResponse.next();
 };
 
 export default proxy;
 
 export const config: ProxyConfig = {
-	matcher: "/auth/reset-password",
+	matcher: ["/auth/reset-password", "/auth/sign-in", "/auth/sign-up"],
 };

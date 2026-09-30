@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import { ApiError } from "./api-error";
+import { ApiError } from "../api-error";
 
 interface NestErrorBody {
 	message?: string | string[];
@@ -18,10 +18,7 @@ const toApiError = (error: unknown): ApiError => {
 	const raw = error.response?.data?.message;
 	const message = Array.isArray(raw) ? raw[0] : raw;
 
-	return new ApiError(
-		typeof message === "string" && message ? message : "Request failed",
-		error.response?.status
-	);
+	return new ApiError(typeof message === "string" && message ? message : "Request failed", error.response?.status);
 };
 
 export const registerErrorInterceptor = (instance: AxiosInstance): void => {
