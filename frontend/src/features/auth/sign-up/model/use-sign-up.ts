@@ -10,10 +10,9 @@ export const useSignUp = () => {
 	const router = useRouter();
 
 	return useMutation({
-		mutationFn: ({ username, email, password }: SignUpFormValues) =>
-			signUp({ username, email, password }),
+		mutationFn: ({ username, email, password }: SignUpFormValues) => signUp({ username, email, password }),
 		onSuccess: ({ message }) => {
-			router.replace(PAGES.auth.signIn);
+			router.replace(PAGES.home);
 			toast.success(message);
 		},
 		onError: ({ message }: ApiError) => {

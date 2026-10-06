@@ -19,26 +19,12 @@ export const Header: FC<IProps> = ({ className }) => {
 
 	return (
 		<div className={className}>
-			<div
-				className={
-					"max-w-[1440px] w-full mx-auto flex items-center h-[65px] justify-center"
-				}
-			>
-				<div
-					className={
-						"bg-black rounded-[12px] w-full h-full flex justify-center"
-					}
-				>
-					<div
-						className={
-							"max-w-[630px] w-full mx-auto flex items-center justify-between"
-						}
-					>
+			<div className={"max-w-[1440px] w-full mx-auto flex items-center h-[65px] justify-center"}>
+				<div className={"bg-black rounded-[12px] w-full h-full flex justify-center"}>
+					<div className={"max-w-[630px] w-full mx-auto flex items-center justify-between"}>
 						<Logo />
 
-						<div
-							className={"flex items-center gap-4 max-w-[400px] w-full ml-auto"}
-						>
+						<div className={"flex items-center gap-4 max-w-[400px] w-full ml-auto"}>
 							<Link href={""}>
 								<Typography className={"text-white"}>Movies</Typography>
 							</Link>
@@ -49,37 +35,24 @@ export const Header: FC<IProps> = ({ className }) => {
 					</div>
 				</div>
 
-				<div
-					className={
-						"bg-black rounded-[12px] max-w-[435px] w-full h-full flex justify-center"
-					}
-				>
-					<div
-						className={
-							"max-w-[300px] w-full mx-auto flex items-center justify-between"
-						}
-					>
+				<div className={"bg-black rounded-[12px] max-w-[435px] w-full h-full flex justify-center"}>
+					<div className={"max-w-[300px] w-full mx-auto flex items-center justify-between"}>
 						<HugeiconsIcon icon={Search} className={"text-white"} />
 
 						<div className={"flex items-center gap-2"}>
-							<Button
-								onClick={() => router.push(PAGES.auth.signIn)}
-								variant={"text"}
-								className={"[&_*]:text-white!"}
-							>
+							<Button onClick={() => router.push(PAGES.auth.signIn)} variant={"text"} className={"[&_*]:text-white!"}>
 								<HugeiconsIcon icon={Lock} />
 								<Typography>Login</Typography>
 							</Button>
 						</div>
 
 						<div className={"flex items-center gap-2"}>
-							<Button
-								variant={"text"}
-								onClick={() => router.push(PAGES.auth.signUp)}
-							>
-								<HugeiconsIcon icon={Login} className={"text-primary-500"} />
-								<Typography>Sign Up</Typography>
-							</Button>
+							<Link href={PAGES.auth.signUp}>
+								<Button variant={"text"}>
+									<HugeiconsIcon icon={Login} className={"text-primary-500"} />
+									<Typography>Sign Up</Typography>
+								</Button>
+							</Link>
 						</div>
 					</div>
 				</div>
