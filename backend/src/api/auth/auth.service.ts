@@ -1,13 +1,14 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Prisma } from '@generated/prisma/client';
 import { UsersService } from '../users/users.service';
 import { SignUpDto } from './dto/req/sign-up.dto';
 import { SignInDto } from './dto/req/sign-in.dto';
 import argon2 from 'argon2';
+import { randomUUID } from 'crypto';
 import { TokensService } from '@infrastructure/tokens/tokens.service';
 import { TokensResponseDto } from '@infrastructure/tokens/dto/res/tokens-response.dto';
 import { UserResponseDto } from '../users/dto/res/user-response.dto';
-import { JwtTokenPayloadResponseDto } from '@infrastructure/tokens/dto/res/jwt-token-response.dto';
+import type { VerifiedJwtPayload } from '@infrastructure/tokens/types/jwt-payload.type';
 import { TokenDenylistService } from '@infrastructure/redis/token-denylist.service';
 
 const PRISMA_UNIQUE_CONSTRAINT_VIOLATION = 'P2002';
@@ -19,6 +20,12 @@ export class AuthService {
     private readonly tokensService: TokensService,
     private readonly tokenDenylistService: TokenDenylistService,
   ) {}
+
+  private dummyHash?: Promise<string>;
+
+  private getDummyHash(): Promise<string> {
+    return (this.dummyHash ??= argon2.hash(randomUUID()));
+  }
 
   async signUp(dto: SignUpDto): Promise<TokensResponseDto> {
     try {
@@ -37,13 +44,11 @@ export class AuthService {
   }
 
   async signIn(dto: SignInDto): Promise<TokensResponseDto> {
-    const user = await this.usersService.findByEmail(dto.email);
+    const user = await this.usersService.findCredentialsByEmail(dto.email);
 
-    if (!user) throw new BadRequestException('Invalid credentials');
+    const isCorrectPassword = await argon2.verify(user?.password ?? (await this.getDummyHash()), dto.password);
 
-    const isCorrectPassword = await argon2.verify(user.password, dto.password);
-
-    if (!isCorrectPassword) throw new BadRequestException('Invalid credentials');
+    if (!user || !isCorrectPassword) throw new UnauthorizedException('Invalid credentials');
 
     return await this.tokensService.generateTokens({
       sub: user.id,
@@ -51,20 +56,20 @@ export class AuthService {
     });
   }
 
-  async signOut(accessTokenPayload: JwtTokenPayloadResponseDto, refreshToken: string | undefined): Promise<void> {
-    const ttlAccessToken = accessTokenPayload.exp - Math.floor(Date.now() / 1000);
-    await this.tokenDenylistService.revoke(accessTokenPayload.jti, ttlAccessToken);
+  async signOut(accessTokenPayload: VerifiedJwtPayload, refreshToken: string | undefined): Promise<void> {
+    await this.tokenDenylistService.revoke(accessTokenPayload.jti, accessTokenPayload.exp);
 
     if (!refreshToken) return;
 
-    try {
-      const refreshTokenPayload = await this.tokensService.verifyRefreshToken(refreshToken);
-      const ttlRefreshToken = refreshTokenPayload.exp - Math.floor(Date.now() / 1000);
+    let refreshTokenPayload: VerifiedJwtPayload;
 
-      await this.tokenDenylistService.revoke(refreshTokenPayload.jti, ttlRefreshToken);
+    try {
+      refreshTokenPayload = await this.tokensService.verifyRefreshToken(refreshToken);
     } catch {
-      // refresh-токена нет
+      return;
     }
+
+    await this.tokenDenylistService.revoke(refreshTokenPayload.jti, refreshTokenPayload.exp);
   }
 
   async refreshTokens(refreshToken: string | undefined): Promise<TokensResponseDto> {
@@ -72,20 +77,24 @@ export class AuthService {
 
     const refreshTokenPayload = await this.tokensService.verifyRefreshToken(refreshToken);
 
-    const ttlSeconds = refreshTokenPayload.exp - Math.floor(Date.now() / 1000);
+    const isClaimed = await this.tokenDenylistService.revokeOnce(refreshTokenPayload.jti, refreshTokenPayload.exp);
 
-    await this.tokenDenylistService.revoke(refreshTokenPayload.jti, ttlSeconds);
+    if (!isClaimed) throw new UnauthorizedException('Token revoked');
+
+    const user = await this.usersService.findById(refreshTokenPayload.sub);
+
+    if (!user) throw new UnauthorizedException('User not found');
 
     return await this.tokensService.generateTokens({
-      sub: refreshTokenPayload.sub,
-      email: refreshTokenPayload.email,
+      sub: user.id,
+      email: user.email,
     });
   }
 
   async me(id: string): Promise<UserResponseDto> {
     const user = await this.usersService.findById(id);
 
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new UnauthorizedException('User not found');
 
     return user;
   }

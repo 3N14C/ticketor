@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { ENVIRONMENTS } from '@core/configs';
+import { ENVIRONMENTS } from '@common/config';
 import { randomUUID } from 'crypto';
-import { JwtTokenPayloadDto } from './dto/req/jwt-token-payload.dto';
-import { JwtTokenPayloadResponseDto } from './dto/res/jwt-token-response.dto';
+import { JwtPayload, VerifiedJwtPayload } from './types/jwt-payload.type';
 import { TokensResponseDto } from './dto/res/tokens-response.dto';
+import { JWT_ALGORITHM } from './jwt-algorithm';
 
 @Injectable()
 export class TokensService {
@@ -14,7 +14,7 @@ export class TokensService {
     private readonly configService: ConfigService,
   ) {}
 
-  async generateAccessToken(payload: JwtTokenPayloadDto): Promise<string> {
+  async generateAccessToken(payload: JwtPayload): Promise<string> {
     const generatedJti = randomUUID();
 
     return await this.jwtService.signAsync(
@@ -24,12 +24,13 @@ export class TokensService {
       },
       {
         secret: this.configService.getOrThrow<string>(ENVIRONMENTS.jwt.access.secret),
-        expiresIn: Number(this.configService.getOrThrow<number>(ENVIRONMENTS.jwt.access.expiresIn)),
+        algorithm: JWT_ALGORITHM,
+        expiresIn: this.configService.getOrThrow<number>(ENVIRONMENTS.jwt.access.expiresIn),
       },
     );
   }
 
-  async generateRefreshToken(payload: JwtTokenPayloadDto): Promise<string> {
+  async generateRefreshToken(payload: JwtPayload): Promise<string> {
     const generatedJti = randomUUID();
 
     return await this.jwtService.signAsync(
@@ -39,12 +40,13 @@ export class TokensService {
       },
       {
         secret: this.configService.getOrThrow<string>(ENVIRONMENTS.jwt.refresh.secret),
-        expiresIn: Number(this.configService.getOrThrow<number>(ENVIRONMENTS.jwt.refresh.expiresIn)),
+        algorithm: JWT_ALGORITHM,
+        expiresIn: this.configService.getOrThrow<number>(ENVIRONMENTS.jwt.refresh.expiresIn),
       },
     );
   }
 
-  async generateTokens(payload: JwtTokenPayloadDto): Promise<TokensResponseDto> {
+  async generateTokens(payload: JwtPayload): Promise<TokensResponseDto> {
     const [accessToken, refreshToken] = await Promise.all([
       this.generateAccessToken(payload),
       this.generateRefreshToken(payload),
@@ -56,15 +58,10 @@ export class TokensService {
     };
   }
 
-  async verifyAccessToken(token: string): Promise<JwtTokenPayloadResponseDto> {
-    return await this.jwtService.verifyAsync(token, {
-      secret: this.configService.getOrThrow<string>(ENVIRONMENTS.jwt.access.secret),
-    });
-  }
-
-  async verifyRefreshToken(token: string): Promise<JwtTokenPayloadResponseDto> {
+  async verifyRefreshToken(token: string): Promise<VerifiedJwtPayload> {
     return await this.jwtService.verifyAsync(token, {
       secret: this.configService.getOrThrow<string>(ENVIRONMENTS.jwt.refresh.secret),
+      algorithms: [JWT_ALGORITHM],
     });
   }
 }

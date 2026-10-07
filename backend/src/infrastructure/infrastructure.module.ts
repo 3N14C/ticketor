@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CookieModule } from './cookie/cookie.module';
 import { ObserveModule } from './observe/observe';
-import { ENVIRONMENTS } from '@core/configs';
+import { ENVIRONMENTS } from '@common/config';
+import { validateEnv } from '@common/config/env.validation';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
@@ -13,17 +13,12 @@ import { RedisService } from './redis/redis.service';
 @Module({
   imports: [
     PrismaModule,
-    ConfigModule.forRoot({ isGlobal: true }),
-    CookieModule,
+    ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
     ObserveModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         appKey: configService.getOrThrow<string>(ENVIRONMENTS.observe.appKey),
-        appSecret: configService.getOrThrow<string>(
-          ENVIRONMENTS.observe.appSecret,
-        ),
-        serviceId: configService.getOrThrow<string>(
-          ENVIRONMENTS.observe.serviceId,
-        ),
+        appSecret: configService.getOrThrow<string>(ENVIRONMENTS.observe.appSecret),
+        serviceId: configService.getOrThrow<string>(ENVIRONMENTS.observe.serviceId),
         runtimeMetrics: true,
       }),
       inject: [ConfigService],
@@ -33,12 +28,8 @@ import { RedisService } from './redis/redis.service';
       useFactory: (configService: ConfigService, redisService: RedisService) => ({
         throttlers: [
           {
-            ttl: Number(
-              configService.getOrThrow<string>(ENVIRONMENTS.throttle.ttl),
-            ),
-            limit: Number(
-              configService.getOrThrow<string>(ENVIRONMENTS.throttle.limit),
-            ),
+            ttl: configService.getOrThrow<number>(ENVIRONMENTS.throttle.ttl),
+            limit: configService.getOrThrow<number>(ENVIRONMENTS.throttle.limit),
           },
         ],
         storage: new ThrottlerStorageRedisService(redisService),

@@ -3,7 +3,9 @@ export const ENVIRONMENTS = {
     origin: 'CORS_ORIGIN',
     credentials: 'CORS_CREDENTIALS',
   },
+  nodeEnv: 'NODE_ENV',
   port: 'PORT',
+  trustProxy: 'TRUST_PROXY',
   db: {
     url: 'DATABASE_URL',
   },
@@ -19,7 +21,7 @@ export const ENVIRONMENTS = {
   },
   cookie: {
     path: 'COOKIE_PATH',
-    httpOnly: 'COOKIE_HTTP_ONLY',
+    refreshPath: 'COOKIE_REFRESH_PATH',
     sameSite: 'COOKIE_SAME_SITE',
   },
   observe: {

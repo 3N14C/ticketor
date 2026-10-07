@@ -21,6 +21,8 @@ services:
     image: redis:8-alpine
     container_name: ticketor-redis
     restart: unless-stopped
+    # AOF: иначе рестарт Redis теряет denylist, и отозванные токены снова становятся валидными
+    command: ["redis-server", "--appendonly", "yes"]
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:

@@ -12,21 +12,29 @@ export class UsersService {
 
     return this.prisma.user.create({
       data: {
-        ...dto,
+        username: dto.username,
+        email: dto.email,
         password: hashedPassword,
       },
     });
   }
 
   async findByEmail(email: string) {
-    return this.prisma.user.findUnique({ where: { email } });
+    return this.prisma.user.findUnique({ where: { email: this.normalizeEmail(email) } });
   }
 
   async findById(id: string) {
+    return this.prisma.user.findUnique({ where: { id } });
+  }
+
+  async findCredentialsByEmail(email: string) {
     return this.prisma.user.findUnique({
-      where: {
-        id,
-      },
+      where: { email: this.normalizeEmail(email) },
+      select: { id: true, email: true, password: true },
     });
+  }
+
+  private normalizeEmail(email: string): string {
+    return email.trim().toLowerCase();
   }
 }

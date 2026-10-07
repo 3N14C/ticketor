@@ -15,9 +15,10 @@ export const registerRefreshInterceptor = (instance: AxiosInstance): void => {
 
 			const isUnauthorized = error.response?.status === 401;
 			const isRefreshCall = config?.url === APIS.auth.refreshTokens;
+			const isCredentialsCall = config?.url === APIS.auth.signIn || config?.url === APIS.auth.signUp;
 			const alreadyRetried = config?._retry;
 
-			if (!config || !isUnauthorized || isRefreshCall || alreadyRetried) {
+			if (!config || !isUnauthorized || isRefreshCall || isCredentialsCall || alreadyRetried) {
 				return Promise.reject(error);
 			}
 

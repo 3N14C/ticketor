@@ -1,18 +1,16 @@
-import { Controller, Get, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Post } from '@nestjs/common/decorators/http/request-mapping.decorator';
-import { Body } from '@nestjs/common/decorators/http/route-params.decorator';
 import { SignUpDto } from './dto/req/sign-up.dto';
-import { MessageResponse } from '@core/types/message-response';
+import { MessageResponse } from '@common/types/message-response';
 import { SignInDto } from './dto/req/sign-in.dto';
 import type { Request, Response } from 'express';
 import { CookieService } from '@infrastructure/cookie/cookie.service';
 import { Throttle } from '@nestjs/throttler';
-import { AccessToken } from './decorators/access-token.decorator';
-import { TokenPayload } from './decorators/token-payload.decorator';
+import { AccessToken } from '@common/auth/decorators/access-token.decorator';
+import { TokenPayload } from '@common/auth/decorators/token-payload.decorator';
 import { UserResponseDto } from '../users/dto/res/user-response.dto';
-import { JwtTokenPayloadResponseDto } from '@infrastructure/tokens/dto/res/jwt-token-response.dto';
-import { RefreshToken } from './decorators/refresh-token.decorator';
+import type { VerifiedJwtPayload } from '@infrastructure/tokens/types/jwt-payload.type';
+import { RefreshToken } from '@common/auth/decorators/refresh-token.decorator';
 
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {
@@ -25,8 +23,7 @@ export class AuthController {
   async signUp(@Body() dto: SignUpDto, @Res({ passthrough: true }) res: Response): Promise<MessageResponse> {
     const tokens = await this.authService.signUp(dto);
 
-    this.cookieService.setToken(res, 'accessToken', tokens.accessToken);
-    this.cookieService.setToken(res, 'refreshToken', tokens.refreshToken);
+    this.cookieService.setTokens(res, tokens);
 
     return {
       message: 'Authorized successfully',
@@ -40,8 +37,7 @@ export class AuthController {
   async signIn(@Body() dto: SignInDto, @Res({ passthrough: true }) res: Response): Promise<MessageResponse> {
     const tokens = await this.authService.signIn(dto);
 
-    this.cookieService.setToken(res, 'accessToken', tokens.accessToken);
-    this.cookieService.setToken(res, 'refreshToken', tokens.refreshToken);
+    this.cookieService.setTokens(res, tokens);
 
     return {
       message: 'Authorized successfully',
@@ -51,7 +47,7 @@ export class AuthController {
   @Post('sign-out')
   @AccessToken()
   async signOut(
-    @TokenPayload() accessTokenPayload: JwtTokenPayloadResponseDto,
+    @TokenPayload() accessTokenPayload: VerifiedJwtPayload,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
@@ -59,8 +55,7 @@ export class AuthController {
 
     await this.authService.signOut(accessTokenPayload, refreshToken);
 
-    this.cookieService.deleteToken(res, 'accessToken');
-    this.cookieService.deleteToken(res, 'refreshToken');
+    this.cookieService.deleteTokens(res);
   }
 
   @Post('refresh-tokens')
@@ -69,8 +64,7 @@ export class AuthController {
     const refreshToken = this.cookieService.getToken(req, 'refreshToken');
     const tokens = await this.authService.refreshTokens(refreshToken);
 
-    this.cookieService.setToken(res, 'accessToken', tokens.accessToken);
-    this.cookieService.setToken(res, 'refreshToken', tokens.refreshToken);
+    this.cookieService.setTokens(res, tokens);
 
     return {
       message: 'Refresh token successfully',
