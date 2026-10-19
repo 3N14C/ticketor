@@ -1,1 +1,0 @@
-export { ENVIRONMENTS } from './environments.config';

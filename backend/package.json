@@ -24,17 +24,17 @@
     "@nestjs/common": "^12.1.1",
     "@nestjs/config": "^12.0.0",
     "@nestjs/core": "^12.1.1",
+    "@nestjs/event-emitter": "^12.0.1",
     "@nestjs/jwt": "^12.0.1",
-    "@nestjs/mapped-types": "^12.0.0",
     "@nestjs/observe": "^0.1.8",
     "@nestjs/passport": "^12.0.0",
     "@nestjs/platform-express": "^12.1.1",
+    "@nestjs/schedule": "^12.0.2",
+    "@nestjs/swagger": "^12.0.2",
     "@nestjs/throttler": "^6.7.0",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "7.10.0",
     "argon2": "^0.45.1",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.15.1",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
     "helmet": "^8.3.0",
@@ -89,5 +89,6 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  }
+  },
+  "packageManager": "pnpm@12.11.2+sha512.25a51652a196785af5f28bda6dfe8dc582ebefa4ac1d180221ce1390231c5fb76637822ea4b6e4633ce74acdcb0a77f725af11bad38177fdeddaee818a955cb9"
 }

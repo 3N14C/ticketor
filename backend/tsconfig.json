@@ -14,10 +14,9 @@
     "sourceMap": true,
     "outDir": "./dist",
     "paths": {
-      "@/*": ["./src/*"],
-      "@common/*": ["./src/common/*"],
-      "@infrastructure/*": ["./src/infrastructure/*"],
-      "@modules/*": ["./src/modules/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@platform/*": ["./src/platform/*"],
+      "@contexts/*": ["./src/contexts/*"],
       "@generated/*": ["./generated/*"]
     },
     "incremental": true,
