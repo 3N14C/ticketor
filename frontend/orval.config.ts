@@ -16,6 +16,10 @@ export default defineConfig({
 			formatter: "prettier",
 			indexFiles: true,
 			override: {
+				mutator: {
+					path: "./src/shared/api/api-mutator.ts",
+					name: "apiMutator",
+				},
 				query: {
 					useInvalidate: true,
 					useGetQueryData: true,

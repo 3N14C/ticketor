@@ -1,10 +1,10 @@
-const API_VERSION = "v1";
+const API_PREFIX = "/api/v1";
 
 export const APIS = {
 	auth: {
-		signUp: `/${API_VERSION}/auth/sign-up`,
-		signIn: `/${API_VERSION}/auth/sign-in`,
-		me: `/${API_VERSION}/auth/me`,
-		refreshTokens: `/${API_VERSION}/auth/refresh-tokens`,
+		signUp: `${API_PREFIX}/auth/sign-up`,
+		signIn: `${API_PREFIX}/auth/sign-in`,
+		me: `${API_PREFIX}/auth/me`,
+		refreshTokens: `${API_PREFIX}/auth/refresh-tokens`,
 	},
 };

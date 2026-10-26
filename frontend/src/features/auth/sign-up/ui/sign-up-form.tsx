@@ -9,10 +9,10 @@ import { Button } from "@shared/ui/button";
 import Link from "next/link";
 import { PAGES } from "@shared/config";
 import { defaultSignUpValues, SignUpFormValues, signUpSchema } from "../model/sign-up-schema";
-import { useAuthSignUp } from "@shared/api/generated";
+import { useSignUp } from "../model/use-sign-up";
 
 export const SignUpForm: FC = () => {
-	const { mutate, isPending } = useAuthSignUp();
+	const { signUp, isPending } = useSignUp();
 	const {
 		register,
 		handleSubmit,
@@ -23,12 +23,8 @@ export const SignUpForm: FC = () => {
 		mode: "onChange",
 	});
 
-	const onSubmit = (data: SignUpFormValues) => {
-		mutate({ data });
-	};
-
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className={"flex flex-col items-start gap-4"}>
+		<form onSubmit={handleSubmit(signUp)} className={"flex flex-col items-start gap-4"}>
 			<Input {...register("name")} label={"Name"} placeholder={"Enter your name"} size={"56"} autoComplete={"username"} error={errors.name} />
 
 			<Input {...register("email")} label={"Email"} placeholder={"name@example.com"} size={"56"} type={"email"} autoComplete={"email"} error={errors.email} />

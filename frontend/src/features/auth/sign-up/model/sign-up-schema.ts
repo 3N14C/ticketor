@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { SignUpRequest } from "@shared/api/generated/model";
+import type { SignUpRequest } from "@shared/api";
 
 export const signUpSchema = z
 	.object({

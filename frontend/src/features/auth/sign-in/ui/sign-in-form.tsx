@@ -11,10 +11,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { defaultSignInSchemaValues, SignInFormValues, signInSchema } from "../model/sign-in-schema";
 import { LoaderCircle } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useAuthSignIn } from "@shared/api/generated";
+import { useSignIn } from "../model/use-sign-in";
 
 export const SignInForm: FC = () => {
-	const { mutate, isPending } = useAuthSignIn();
+	const { signIn, isPending } = useSignIn();
 	const {
 		register,
 		handleSubmit,
@@ -25,12 +25,8 @@ export const SignInForm: FC = () => {
 		mode: "onChange",
 	});
 
-	const onSubmit = (data: SignInFormValues) => {
-		mutate({ data });
-	};
-
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className={"flex flex-col items-start gap-4"}>
+		<form onSubmit={handleSubmit(signIn)} className={"flex flex-col items-start gap-4"}>
 			<Input {...register("email")} label={"Email"} placeholder={"name@example.com"} size={"56"} type={"email"} error={errors.email} />
 
 			<div className={"flex flex-col gap-3 w-full"}>
