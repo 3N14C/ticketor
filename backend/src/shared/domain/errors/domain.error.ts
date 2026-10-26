@@ -1,4 +1,4 @@
-export type DomainErrorKind = 'not_found' | 'conflict' | 'invalid';
+export type DomainErrorKind = 'not_found' | 'conflict' | 'invalid' | 'unauthorized';
 
 export class DomainError extends Error {
   constructor(

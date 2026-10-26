@@ -6,6 +6,7 @@ const STATUS: Record<DomainErrorKind, HttpStatus> = {
   not_found: HttpStatus.NOT_FOUND,
   conflict: HttpStatus.CONFLICT,
   invalid: HttpStatus.UNPROCESSABLE_ENTITY,
+  unauthorized: HttpStatus.UNAUTHORIZED,
 };
 
 @Catch(DomainError)

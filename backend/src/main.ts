@@ -24,9 +24,17 @@ async function bootstrap() {
   app.useGlobalFilters(new DomainErrorFilter());
 
   app.use(helmet(), cookieParser());
+  app.set('trust proxy', config.get('TRUST_PROXY'));
 
-  const swaggerConfig = new DocumentBuilder().setTitle('Ticketor API Documentation').setVersion('1').build();
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Ticketor API Documentation')
+    .setVersion('1')
+    .addCookieAuth('accessToken')
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig, {
+    operationIdFactory: (controllerKey, methodKey) =>
+      `${controllerKey.replace(/Controller$/, '')}${methodKey[0].toUpperCase()}${methodKey.slice(1)}`,
+  });
   SwaggerModule.setup('docs', app, document);
 
   app.enableCors({
