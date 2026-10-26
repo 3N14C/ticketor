@@ -6,67 +6,35 @@ import { Typography } from "@shared/ui/typography";
 import Link from "next/link";
 import { PAGES } from "@shared/config";
 import { Button } from "@shared/ui/button";
-import { useForm } from "@tanstack/react-form";
-import { getFieldError, trimListener } from "@shared/lib/form";
-import { defaultSignInSchemaValues, signInSchema } from "../model/sign-in-schema";
-import { useSignIn } from "../model/use-sign-in";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { defaultSignInSchemaValues, SignInFormValues, signInSchema } from "../model/sign-in-schema";
 import { LoaderCircle } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { useAuthSignIn } from "@shared/api/generated";
 
 export const SignInForm: FC = () => {
-	const { mutate, isPending } = useSignIn();
-	const form = useForm({
+	const { mutate, isPending } = useAuthSignIn();
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<SignInFormValues>({
 		defaultValues: defaultSignInSchemaValues,
-		validators: {
-			onChange: signInSchema,
-		},
-		formId: "sign-in",
-		onSubmit: async ({ value }) => {
-			mutate(value);
-		},
+		resolver: zodResolver(signInSchema),
+		mode: "onChange",
 	});
 
-	const onSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		event.stopPropagation();
-		void form.handleSubmit();
+	const onSubmit = (data: SignInFormValues) => {
+		mutate({ data });
 	};
 
 	return (
-		<form onSubmit={onSubmit} className={"flex flex-col items-start gap-4"}>
-			<form.Field
-				name={"email"}
-				listeners={trimListener}
-				children={(fieldApi) => (
-					<Input
-						onBlur={fieldApi.handleBlur}
-						onChange={(e) => fieldApi.handleChange(e.target.value)}
-						value={fieldApi.state.value}
-						label={"Email"}
-						placeholder={"name@example.com"}
-						size={"56"}
-						type={"email"}
-						error={getFieldError(fieldApi.state.meta.errors)}
-					/>
-				)}
-			/>
+		<form onSubmit={handleSubmit(onSubmit)} className={"flex flex-col items-start gap-4"}>
+			<Input {...register("email")} label={"Email"} placeholder={"name@example.com"} size={"56"} type={"email"} error={errors.email} />
 
 			<div className={"flex flex-col gap-3 w-full"}>
-				<form.Field
-					name={"password"}
-					children={(fieldApi) => (
-						<Input
-							onBlur={fieldApi.handleBlur}
-							onChange={(e) => fieldApi.handleChange(e.target.value)}
-							error={getFieldError(fieldApi.state.meta.errors)}
-							value={fieldApi.state.value}
-							label={"Password"}
-							type={"password"}
-							placeholder={"Enter your password"}
-							size={"56"}
-						/>
-					)}
-				/>
+				<Input {...register("password")} error={errors.password} label={"Password"} type={"password"} placeholder={"Enter your password"} size={"56"} />
 
 				<div className={"flex items-center justify-between"}>
 					<div className={"flex items-center gap-2"}>
@@ -84,14 +52,9 @@ export const SignInForm: FC = () => {
 				</div>
 			</div>
 
-			<form.Subscribe
-				selector={(state) => state.canSubmit}
-				children={(canSubmit) => (
-					<Button disabled={isPending || !canSubmit} size={"56"} type={"submit"}>
-						{!isPending ? <Typography size={"button-xl"}>Sign in</Typography> : <HugeiconsIcon icon={LoaderCircle} className={"animate-spin"} />}
-					</Button>
-				)}
-			/>
+			<Button disabled={isPending} size={"56"} type={"submit"}>
+				{!isPending ? <Typography size={"button-xl"}>Sign in</Typography> : <HugeiconsIcon icon={LoaderCircle} className={"animate-spin"} />}
+			</Button>
 		</form>
 	);
 };

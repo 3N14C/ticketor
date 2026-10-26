@@ -1,51 +1,30 @@
 "use client";
 
 import { FC } from "react";
-import { useForm } from "@tanstack/react-form";
-import {
-	defaultForgotPasswordSchemaValues,
-	ForgotPasswordSchema,
-} from "../model/forgot-password-schema";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { defaultForgotPasswordSchemaValues, ForgotPasswordFormValues, ForgotPasswordSchema } from "../model/forgot-password-schema";
 import { Input } from "@shared/ui/input";
 import { Button } from "@shared/ui/button";
 import { Typography } from "@shared/ui/typography";
 import { useForgotPassword } from "../model/use-forgot-password";
-import { getFieldError } from "@shared/lib/form";
 
 export const ForgotPasswordForm: FC = () => {
 	const { submit } = useForgotPassword();
 
-	const form = useForm({
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<ForgotPasswordFormValues>({
 		defaultValues: defaultForgotPasswordSchemaValues,
-		validators: {
-			onChange: ForgotPasswordSchema,
-		},
-		onSubmit: async ({ value }) => {
-			submit(value.email);
-		},
+		resolver: zodResolver(ForgotPasswordSchema),
+		mode: "onChange",
 	});
 
-	const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		e.stopPropagation();
-		await form.handleSubmit();
-	};
-
 	return (
-		<form onSubmit={handleSubmit} className={"w-full flex flex-col gap-4"}>
-			<form.Field
-				name={"email"}
-				children={(fieldApi) => (
-					<Input
-						label={"Email"}
-						placeholder={"Enter your email"}
-						type={"email"}
-						onChange={(e) => fieldApi.handleChange(e.target.value)}
-						onBlur={fieldApi.handleBlur}
-						error={getFieldError(fieldApi.state.meta.errors)}
-					/>
-				)}
-			/>
+		<form onSubmit={handleSubmit(({ email }) => submit(email))} className={"w-full flex flex-col gap-4"}>
+			<Input {...register("email")} label={"Email"} placeholder={"Enter your email"} type={"email"} error={errors.email} />
 
 			<Button size={"56"} type={"submit"}>
 				<Typography size={"button-xl"}>Continue</Typography>

@@ -5,22 +5,14 @@ import { Typography } from "../typography";
 import { cn } from "../../lib/style";
 import { TInputVariants } from "./types";
 import { inputVariants } from "./variants";
+import { FieldError } from "react-hook-form";
 
-interface IProps
-	extends
-		Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">,
-		TInputVariants {
+interface IProps extends Omit<React.ComponentProps<"input">, "size">, TInputVariants {
 	label?: string;
-	error?: string | undefined;
+	error?: FieldError | undefined;
 }
 
-export const Input: FC<IProps> = ({
-	className,
-	label,
-	size,
-	error,
-	...props
-}) => {
+export const Input: FC<IProps> = ({ className, label, size, error, ...props }) => {
 	return (
 		<div className={"flex flex-col gap-3 w-full"}>
 			<Typography size={"body-m"} className={"font-medium"}>
@@ -31,7 +23,7 @@ export const Input: FC<IProps> = ({
 				<input {...props} className={cn(inputVariants({ size, className }))} />
 				{error && (
 					<Typography size={"body-xs"} className={"text-red-500"}>
-						{error}
+						{error.message}
 					</Typography>
 				)}
 			</div>
