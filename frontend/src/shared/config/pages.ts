@@ -6,4 +6,7 @@ export const PAGES = {
 		forgotPassword: "/auth/forgot-password",
 		resetPassword: (email: string) => `/auth/reset-password?email=${email}`,
 	},
+	profile: {
+		settings: "/profile/settings",
+	},
 };

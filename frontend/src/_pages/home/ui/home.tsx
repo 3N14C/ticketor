@@ -1,10 +1,10 @@
-import { FC } from "react";
 import { Header } from "@widgets/header";
 import { Typography } from "@shared/ui/typography";
 import { Button } from "@shared/ui/button";
 import { CHIPS } from "../model/chips";
+import { NextPage } from "next";
 
-export const Home: FC = () => {
+export const Home: NextPage = () => {
 	return (
 		<div>
 			<section id={"hero"} className={"bg-[url('/images/png/home-poster.png')] bg-cover bg-center h-screen"}>

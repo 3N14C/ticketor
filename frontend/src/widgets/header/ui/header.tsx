@@ -9,12 +9,15 @@ import { Button } from "@shared/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PAGES } from "@shared/config";
+import { useAuthMe } from "@shared/api";
+import { AuthenticatedHeaderProfile } from "./authenticated-header-profile";
 
 interface IProps {
 	className?: string;
 }
 
 export const Header: FC<IProps> = ({ className }) => {
+	const { data: user } = useAuthMe();
 	const router = useRouter();
 
 	return (
@@ -39,21 +42,29 @@ export const Header: FC<IProps> = ({ className }) => {
 					<div className={"max-w-[300px] w-full mx-auto flex items-center justify-between"}>
 						<HugeiconsIcon icon={Search} className={"text-white"} />
 
-						<div className={"flex items-center gap-2"}>
-							<Button onClick={() => router.push(PAGES.auth.signIn)} variant={"text"} className={"[&_*]:text-white!"}>
-								<HugeiconsIcon icon={Lock} />
-								<Typography>Login</Typography>
-							</Button>
-						</div>
+						<hr className={"bg-neutral-400 w-px h-1/2"} />
 
-						<div className={"flex items-center gap-2"}>
-							<Link href={PAGES.auth.signUp}>
-								<Button variant={"text"}>
-									<HugeiconsIcon icon={Login} className={"text-primary-500"} />
-									<Typography>Sign Up</Typography>
-								</Button>
-							</Link>
-						</div>
+						{user ? (
+							<AuthenticatedHeaderProfile user={user} />
+						) : (
+							<>
+								<div className={"flex items-center gap-2"}>
+									<Button onClick={() => router.push(PAGES.auth.signIn)} variant={"text"} className={"[&_*]:text-white!"}>
+										<HugeiconsIcon icon={Lock} />
+										<Typography>Login</Typography>
+									</Button>
+								</div>
+
+								<div className={"flex items-center gap-2"}>
+									<Link href={PAGES.auth.signUp}>
+										<Button variant={"text"}>
+											<HugeiconsIcon icon={Login} className={"text-primary-500"} />
+											<Typography>Sign Up</Typography>
+										</Button>
+									</Link>
+								</div>
+							</>
+						)}
 					</div>
 				</div>
 			</div>

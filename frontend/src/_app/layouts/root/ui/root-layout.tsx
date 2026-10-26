@@ -7,7 +7,7 @@ import { ReactQuery } from "@/_app/providers";
 export const RootLayout = ({ children }: LayoutProps<"/">) => {
 	return (
 		<html lang="en" className={cn("h-full antialiased font-sans", geistSans.variable, geistMono.variable, figtree.variable)}>
-			<body className="min-h-full flex flex-col bg-black ">
+			<body className="min-h-full flex flex-col bg-black">
 				<ReactQuery>
 					<Toaster />
 					{children}
